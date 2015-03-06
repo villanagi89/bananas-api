@@ -4,24 +4,26 @@ class ReviewsController < ApplicationController
   # GET /reviews
   # GET /reviews.json
   def index
-    @reviews = Review.all
-
-    render json: @reviews
+    if params[:movie_id]
+      @movie = Movie.find(params[:movie_id])
+      @reviews = @movie.reviews
+      render json: @reviews, status: :ok
+    else
+      @reviews = Review.all
+      render json: @reviews, status: :ok
+    end
   end
 
-  # GET /reviews/1
-  # GET /reviews/1.json
-  def show
-    render json: @review
-  end
+  # no need for a show action.
 
   # POST /reviews
   # POST /reviews.json
   def create
+    @movie = Movie.find(params[:movie_id])
     @review = Review.new(review_params)
-
+    @movie.reviews << @review
     if @review.save
-      render json: @review, status: :created, location: @review
+      render json: @review, status: :created
     else
       render json: @review.errors, status: :unprocessable_entity
     end
@@ -33,7 +35,7 @@ class ReviewsController < ApplicationController
     @review = Review.find(params[:id])
 
     if @review.update(review_params)
-      head :no_content
+      render json: @review, status: :ok
     else
       render json: @review.errors, status: :unprocessable_entity
     end
@@ -42,8 +44,8 @@ class ReviewsController < ApplicationController
   # DELETE /reviews/1
   # DELETE /reviews/1.json
   def destroy
+    @review = Review.find(params[:id])
     @review.destroy
-
     head :no_content
   end
 
