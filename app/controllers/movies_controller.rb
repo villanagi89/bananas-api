@@ -6,13 +6,14 @@ class MoviesController < ApplicationController
   def index
     @movies = Movie.all
 
-    render json: @movies
+    render json: @movies, status: 200
   end
 
   # GET /movies/1
   # GET /movies/1.json
   def show
-    render json: @movie
+    @movie = Movie.find(params[:id])
+    render json: @movie, status: 200
   end
 
   # POST /movies
@@ -33,7 +34,7 @@ class MoviesController < ApplicationController
     @movie = Movie.find(params[:id])
 
     if @movie.update(movie_params)
-      head :no_content
+      render json: @movie, status: :ok
     else
       render json: @movie.errors, status: :unprocessable_entity
     end
@@ -42,17 +43,14 @@ class MoviesController < ApplicationController
   # DELETE /movies/1
   # DELETE /movies/1.json
   def destroy
+    @movie = Movie.find(params[:id])
     @movie.destroy
-
-    head :no_content
+  # display all movies
+    @movies = Movie.all
+    render json: @movies, status: 202
   end
 
   private
-
-    def set_movie
-      @movie = Movie.find(params[:id])
-    end
-
     def movie_params
       params.require(:movie).permit(:title, :gross, :release_date, :mpaa_rating, :description)
     end
