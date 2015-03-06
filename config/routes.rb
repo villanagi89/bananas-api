@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :reviews, except: [:new, :edit]
   resources :movies do
   end
   # The priority is based upon order of creation: first created -> highest priority.
